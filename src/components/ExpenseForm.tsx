@@ -1,9 +1,11 @@
 import { useState, type SubmitEvent } from 'react';
-import type { ExpenseFormValues } from '../types/expense';
+import type { Expense, ExpenseFormValues } from '../types/expense';
 import { isValidDate } from '../utils/date';
 
 type ExpenseFormProps = {
   onSubmit: (expense: ExpenseFormValues) => void;
+  expenseToEdit?: Expense | null;
+  onCancelEdit?: () => void;
 };
 
 type FormErrors = Partial<Record<keyof ExpenseFormValues, string>>;
@@ -15,12 +17,19 @@ function getToday() {
   return new Date(now.getTime() - timezoneOffset).toISOString().slice(0, 10);
 }
 
-function ExpenseForm({ onSubmit }: ExpenseFormProps) {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState(getToday);
+function ExpenseForm({
+  onSubmit,
+  expenseToEdit = null,
+  onCancelEdit,
+}: ExpenseFormProps) {
+  const [description, setDescription] = useState(
+    expenseToEdit?.description ?? '',
+  );
+  const [amount, setAmount] = useState(expenseToEdit?.amount.toString() ?? '');
+  const [category, setCategory] = useState(expenseToEdit?.category ?? '');
+  const [date, setDate] = useState(expenseToEdit?.date ?? getToday);
   const [errors, setErrors] = useState<FormErrors>({});
+  const isEditing = expenseToEdit !== null;
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -56,10 +65,13 @@ function ExpenseForm({ onSubmit }: ExpenseFormProps) {
       date,
     });
 
-    setDescription('');
-    setAmount('');
-    setCategory('');
-    setDate(getToday());
+    if (!isEditing) {
+      setDescription('');
+      setAmount('');
+      setCategory('');
+      setDate(getToday());
+    }
+
     setErrors({});
   }
 
@@ -70,9 +82,13 @@ function ExpenseForm({ onSubmit }: ExpenseFormProps) {
       noValidate
     >
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Add expense</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          {isEditing ? 'Edit expense' : 'Add expense'}
+        </h1>
         <p className="mt-1 text-sm text-slate-600">
-          Record an expense to keep track of your spending.
+          {isEditing
+            ? 'Update the details for this expense.'
+            : 'Record an expense to keep track of your spending.'}
         </p>
       </div>
 
@@ -170,12 +186,27 @@ function ExpenseForm({ onSubmit }: ExpenseFormProps) {
         )}
       </div>
 
-      <button
-        className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        type="submit"
-      >
-        Add expense
-      </button>
+      <div className="flex gap-3">
+        {isEditing && (
+          <button
+            className="flex-1 rounded-md border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600"
+            type="button"
+            onClick={onCancelEdit}
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          className={`flex-1 rounded-md px-4 py-2 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            isEditing
+              ? 'bg-yellow-400 text-slate-900 hover:bg-yellow-500 focus-visible:outline-yellow-500'
+              : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-blue-600'
+          }`}
+          type="submit"
+        >
+          {isEditing ? 'Save changes' : 'Add expense'}
+        </button>
+      </div>
     </form>
   );
 }
