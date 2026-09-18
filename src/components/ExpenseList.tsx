@@ -3,9 +3,10 @@ import ExpenseItem from './ExpenseItem';
 
 type ExpenseListProps = {
   expenses: Expense[];
+  onDelete: (id: string) => void;
 };
 
-function ExpenseList({ expenses }: ExpenseListProps) {
+function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
   return (
     <section
       className="mx-auto w-full max-w-xl"
@@ -28,7 +29,11 @@ function ExpenseList({ expenses }: ExpenseListProps) {
       ) : (
         <ul className="mt-3 space-y-3">
           {expenses.map((expense) => (
-            <ExpenseItem key={expense.id} expense={expense} />
+            <ExpenseItem
+              key={expense.id}
+              expense={expense}
+              onDelete={onDelete}
+            />
           ))}
         </ul>
       )}
