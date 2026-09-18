@@ -1,5 +1,6 @@
 import { useState, type SubmitEvent } from 'react';
 import type { ExpenseFormValues } from '../types/expense';
+import { isValidDate } from '../utils/date';
 
 type ExpenseFormProps = {
   onSubmit: (expense: ExpenseFormValues) => void;
@@ -12,18 +13,6 @@ function getToday() {
   const timezoneOffset = now.getTimezoneOffset() * 60_000;
 
   return new Date(now.getTime() - timezoneOffset).toISOString().slice(0, 10);
-}
-
-function isValidDate(value: string) {
-  const [year, month, day] = value.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
 }
 
 function ExpenseForm({ onSubmit }: ExpenseFormProps) {

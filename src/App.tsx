@@ -2,18 +2,13 @@ import { useState } from 'react'
 import ExpenseForm from './components/ExpenseForm'
 import ExpenseList from './components/ExpenseList'
 import type { Expense, ExpenseFormValues } from './types/expense'
+import { createExpense } from './utils/createExpense'
 
 function App() {
   const [expenses, setExpenses] = useState<Expense[]>([])
 
   function handleAddExpense(expenseValues: ExpenseFormValues) {
-    const timestamp = new Date().toISOString()
-    const expense: Expense = {
-      id: crypto.randomUUID(),
-      ...expenseValues,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    }
+    const expense = createExpense(expenseValues)
 
     setExpenses((currentExpenses) => [expense, ...currentExpenses])
   }
