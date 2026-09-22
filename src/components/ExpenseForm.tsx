@@ -10,6 +10,17 @@ type ExpenseFormProps = {
 
 type FormErrors = Partial<Record<keyof ExpenseFormValues, string>>;
 
+const expenseCategories = [
+  'Food',
+  'Transport',
+  'Housing',
+  'Utilities',
+  'Health',
+  'Entertainment',
+  'Education',
+  'Other',
+];
+
 function getToday() {
   const now = new Date();
   const timezoneOffset = now.getTimezoneOffset() * 60_000;
@@ -77,7 +88,7 @@ function ExpenseForm({
 
   return (
     <form
-      className="mx-auto w-full max-w-xl space-y-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+      className="w-full space-y-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -116,51 +127,60 @@ function ExpenseForm({
         )}
       </div>
 
-      <div>
-        <label
-          className="block text-sm font-medium text-slate-700"
-          htmlFor="amount"
-        >
-          Amount
-        </label>
-        <input
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          id="amount"
-          type="number"
-          min="0.01"
-          step="0.01"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          aria-describedby={errors.amount ? 'amount-error' : undefined}
-          aria-invalid={Boolean(errors.amount)}
-        />
-        {errors.amount && (
-          <p className="mt-1 text-sm text-red-600" id="amount-error">
-            {errors.amount}
-          </p>
-        )}
-      </div>
+      <div className="space-y-5 sm:grid sm:grid-cols-2 sm:gap-5 sm:space-y-0">
+        <div>
+          <label
+            className="block text-sm font-medium text-slate-700"
+            htmlFor="amount"
+          >
+            Amount
+          </label>
+          <input
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            id="amount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            aria-describedby={errors.amount ? 'amount-error' : undefined}
+            aria-invalid={Boolean(errors.amount)}
+          />
+          {errors.amount && (
+            <p className="mt-1 text-sm text-red-600" id="amount-error">
+              {errors.amount}
+            </p>
+          )}
+        </div>
 
-      <div>
-        <label
-          className="block text-sm font-medium text-slate-700"
-          htmlFor="category"
-        >
-          Category
-        </label>
-        <input
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          id="category"
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          aria-describedby={errors.category ? 'category-error' : undefined}
-          aria-invalid={Boolean(errors.category)}
-        />
-        {errors.category && (
-          <p className="mt-1 text-sm text-red-600" id="category-error">
-            {errors.category}
-          </p>
-        )}
+        <div>
+          <label
+            className="block text-sm font-medium text-slate-700"
+            htmlFor="category"
+          >
+            Category
+          </label>
+          <select
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            id="category"
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+            aria-describedby={errors.category ? 'category-error' : undefined}
+            aria-invalid={Boolean(errors.category)}
+          >
+            <option value="">Select a category</option>
+            {expenseCategories.map((expenseCategory) => (
+              <option key={expenseCategory} value={expenseCategory}>
+                {expenseCategory}
+              </option>
+            ))}
+          </select>
+          {errors.category && (
+            <p className="mt-1 text-sm text-red-600" id="category-error">
+              {errors.category}
+            </p>
+          )}
+        </div>
       </div>
 
       <div>
