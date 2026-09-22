@@ -1,5 +1,7 @@
+import { DollarSign } from 'lucide-react'
 import type { Expense } from '../types/expense'
 import { calculateTotalExpenses } from '../utils/calculateTotalExpenses'
+import { Card, CardContent } from './ui/card'
 
 type ExpenseSummaryProps = {
   expenses: Expense[]
@@ -14,20 +16,24 @@ function ExpenseSummary({ expenses }: ExpenseSummaryProps) {
   const total = calculateTotalExpenses(expenses)
 
   return (
-    <section
-      className="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+    <Card
+      className="border-primary/10 bg-primary text-primary-foreground shadow-sm"
       aria-labelledby="total-spent-heading"
     >
-      <h2
-        id="total-spent-heading"
-        className="text-sm font-medium text-slate-600"
-      >
-        Total spent
-      </h2>
-      <p className="mt-1 text-2xl font-semibold text-slate-900">
-        {currencyFormatter.format(total)}
-      </p>
-    </section>
+      <CardContent className="flex items-center justify-between">
+        <div>
+          <p id="total-spent-heading" className="text-sm text-primary-foreground/75">
+            Total spent
+          </p>
+          <p className="mt-1 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+            {currencyFormatter.format(total)}
+          </p>
+        </div>
+        <div className="flex size-12 items-center justify-center rounded-xl bg-primary-foreground/15">
+          <DollarSign className="size-6" aria-hidden="true" />
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
