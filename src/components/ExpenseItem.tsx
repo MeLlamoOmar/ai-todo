@@ -1,4 +1,24 @@
+import { Pencil, Trash2 } from 'lucide-react'
 import type { Expense } from '../types/expense'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Card, CardContent } from './ui/card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from './ui/tooltip'
 
 type ExpenseItemProps = {
   expense: Expense
@@ -18,81 +38,77 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 function ExpenseItem({ expense, onDelete, onEdit }: ExpenseItemProps) {
   const expenseDate = new Date(`${expense.date}T00:00:00`)
 
-  function handleDelete() {
-    const confirmed = window.confirm(
-      `Delete expense "${expense.description}"?`,
-    )
-
-    if (confirmed) {
-      onDelete(expense.id)
-    }
-  }
-
   return (
-    <li className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h3 className="font-medium text-slate-900">{expense.description}</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          {expense.category} · {dateFormatter.format(expenseDate)}
-        </p>
-      </div>
-      <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
-        <p className="text-lg font-semibold text-slate-900">
-          {currencyFormatter.format(expense.amount)}
-        </p>
-        <div className="flex gap-3">
-          <button
-            className="text-slate-600 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600"
-            type="button"
-            onClick={() => onEdit(expense)}
-            aria-label="Edit expense"
-            title="Edit expense"
-          >
-            <svg
-              aria-hidden="true"
-              className="size-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m16.862 4.487 2.651 2.651M4.5 19.5l3.969-.992L19.513 7.464a1.875 1.875 0 0 0-2.652-2.652L5.817 15.856 4.5 19.5Z"
-              />
-            </svg>
-          </button>
-          <button
-            className="text-red-600 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-            type="button"
-            onClick={handleDelete}
-            aria-label="Delete expense"
-            title="Delete expense"
-          >
-            <svg
-              aria-hidden="true"
-              className="size-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18" />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8 6V4h8v2M19 6l-1 14H6L5 6"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10 11v5M14 11v5"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+    <li>
+      <Card size="sm" className="transition-shadow hover:shadow-sm">
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-2">
+            <h3 className="truncate font-medium">{expense.description}</h3>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <Badge variant="secondary">{expense.category}</Badge>
+              <span>{dateFormatter.format(expenseDate)}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 sm:justify-end">
+            <p className="font-heading text-lg font-semibold">
+              {currencyFormatter.format(expense.amount)}
+            </p>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(expense)}
+                    aria-label="Edit expense"
+                  >
+                    <Pencil className="size-4" aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Edit expense</TooltipContent>
+              </Tooltip>
+
+              <AlertDialog>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        aria-label="Delete expense"
+                      >
+                        <Trash2 className="size-4" aria-hidden="true" />
+                      </Button>
+                    </AlertDialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete expense</TooltipContent>
+                </Tooltip>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete expense?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete “{expense.description}”.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={() => onDelete(expense.id)}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </li>
   )
 }

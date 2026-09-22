@@ -1,5 +1,6 @@
 import type { Expense } from '../types/expense';
 import ExpenseItem from './ExpenseItem';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
 type ExpenseListProps = {
   expenses: Expense[];
@@ -10,35 +11,40 @@ type ExpenseListProps = {
 function ExpenseList({ expenses, onDelete, onEdit }: ExpenseListProps) {
   return (
     <section
-      className="mx-auto w-full max-w-xl"
+      className="w-full"
       aria-labelledby="expenses-heading"
     >
-      <h2
-        id="expenses-heading"
-        className="text-xl font-semibold text-slate-900"
-      >
-        Expenses
-      </h2>
-
-      {expenses.length === 0 ? (
-        <p
-          className="mt-3 rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600"
-          role="status"
-        >
-          No expenses yet. Add one using the form above.
-        </p>
-      ) : (
-        <ul className="mt-3 space-y-3">
-          {expenses.map((expense) => (
-            <ExpenseItem
-              key={expense.id}
-              expense={expense}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
-          ))}
-        </ul>
-      )}
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle id="expenses-heading">Recent expenses</CardTitle>
+          <CardDescription>
+            {expenses.length === 0
+              ? 'Your recorded expenses will appear here.'
+              : `${expenses.length} recorded expense${expenses.length === 1 ? '' : 's'}.`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {expenses.length === 0 ? (
+            <p
+              className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground"
+              role="status"
+            >
+              No expenses yet. Add one to get started.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {expenses.map((expense) => (
+                <ExpenseItem
+                  key={expense.id}
+                  expense={expense}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </section>
   );
 }
