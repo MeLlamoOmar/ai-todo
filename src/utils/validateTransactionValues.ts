@@ -1,11 +1,15 @@
-import type { ExpenseFormValues } from '../types/expense'
+import type { TransactionFormValues } from '../types/transaction'
 import { isValidDate } from './date'
 
-export function validateExpenseValues(
-  values: ExpenseFormValues,
-): ExpenseFormValues {
+export function validateTransactionValues(
+  values: TransactionFormValues,
+): TransactionFormValues {
   const description = values.description.trim()
   const category = values.category.trim()
+
+  if (values.type !== 'income' && values.type !== 'expense') {
+    throw new Error('Transaction type is invalid')
+  }
 
   if (!description) {
     throw new Error('Description is required')
@@ -24,6 +28,7 @@ export function validateExpenseValues(
   }
 
   return {
+    type: values.type,
     description,
     amount: values.amount,
     category,
