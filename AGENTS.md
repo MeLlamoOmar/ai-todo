@@ -12,6 +12,7 @@ Users should be able to:
 - View transactions
 - Edit a transaction
 - Delete a transaction
+- Filter transactions by type, category, and date range
 - See total income, total expenses, and the current balance
 
 Do not add features unless they are explicitly requested.
@@ -23,6 +24,7 @@ Do not add features unless they are explicitly requested.
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
+- TanStack Table
 
 Keep dependencies to a minimum.
 

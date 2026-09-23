@@ -7,6 +7,7 @@ import type {
   TransactionType,
 } from '../types/transaction'
 import { isValidDate } from '../utils/date'
+import { transactionCategories } from '../utils/transactionCategories'
 import { Button } from './ui/button'
 import { Calendar } from './ui/calendar'
 import {
@@ -36,20 +37,6 @@ type TransactionFormProps = {
 }
 
 type FormErrors = Partial<Record<keyof TransactionFormValues, string>>
-
-const transactionCategories: Record<TransactionType, readonly string[]> = {
-  expense: [
-    'Food',
-    'Transport',
-    'Housing',
-    'Utilities',
-    'Health',
-    'Entertainment',
-    'Education',
-    'Other',
-  ],
-  income: ['Salary', 'Freelance', 'Investments', 'Gift', 'Other'],
-}
 
 function getToday() {
   const now = new Date()
