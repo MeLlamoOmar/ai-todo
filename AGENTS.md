@@ -2,17 +2,17 @@
 
 ## Project Overview
 
-This is a simple expense tracking application built for learning.
+This is a simple transaction tracking application built for learning.
 
 The goal of the project is to keep the codebase small, understandable, and easy to modify.
 
 Users should be able to:
 
-- Add an expense
-- View expenses
-- Edit an expense
-- Delete an expense
-- See the total amount spent
+- Add an income or expense transaction
+- View transactions
+- Edit a transaction
+- Delete a transaction
+- See total income, total expenses, and the current balance
 
 Do not add features unless they are explicitly requested.
 
@@ -21,21 +21,25 @@ Do not add features unless they are explicitly requested.
 - Vite
 - React
 - TypeScript
-- Tailwind css
+- Tailwind CSS
+- shadcn/ui
 
 Keep dependencies to a minimum.
 
-## Expense Model
+## Transaction Model
 
-An expense should contain:
+A transaction should contain:
 
 ```ts
-type Expense = {
+type Transaction = {
   id: string;
+  type: 'income' | 'expense';
   description: string;
   amount: number;
   category: string;
   date: string;
+  createdAt: string;
+  updatedAt: string;
 };
 ```
 
@@ -77,10 +81,10 @@ Keep components focused on one responsibility.
 Possible components include:
 
 ```text
-ExpenseForm
-ExpenseList
-ExpenseItem
-ExpenseSummary
+TransactionForm
+TransactionList
+TransactionItem
+TransactionSummary
 ```
 
 Do not create a component only to reduce a few lines of code.
@@ -89,7 +93,7 @@ Extract a component when it makes the application easier to understand.
 
 ## Data Storage
 
-Initially, expenses can be stored in React state.
+Initially, transactions can be stored in React state.
 
 Do not add:
 
@@ -118,8 +122,9 @@ Do not spend significant time on visual styling unless the task specifically req
 
 ## Validation
 
-When creating or editing an expense:
+When creating or editing a transaction:
 
+- Type must be `income` or `expense`.
 - Description cannot be empty.
 - Amount must be greater than zero.
 - Category cannot be empty.
@@ -132,9 +137,10 @@ Use the available project commands to verify changes.
 Typically:
 
 ```bash
-npm run dev
-npm run lint
-npm run build
+pnpm dev
+pnpm test
+pnpm lint
+pnpm build
 ```
 
 Do not invent commands that are not configured in `package.json`.

@@ -1,5 +1,8 @@
-export type Expense = {
+export type TransactionType = 'income' | 'expense'
+
+export type Transaction = {
   id: string
+  type: TransactionType
   description: string
   amount: number
   category: string
@@ -8,7 +11,7 @@ export type Expense = {
   updatedAt: string
 }
 
-export type ExpenseFormValues = Omit<
-  Expense,
+export type TransactionFormValues = Omit<
+  Transaction,
   'id' | 'createdAt' | 'updatedAt'
 >
