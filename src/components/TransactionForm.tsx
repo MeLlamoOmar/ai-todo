@@ -1,7 +1,11 @@
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { useState, type SubmitEvent } from 'react'
-import type { Expense, ExpenseFormValues } from '../types/expense'
+import type {
+  Transaction,
+  TransactionFormValues,
+  TransactionType,
+} from '../types/transaction'
 import { isValidDate } from '../utils/date'
 import { Button } from './ui/button'
 import { Calendar } from './ui/calendar'
@@ -23,25 +27,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 
-type ExpenseFormProps = {
-  onSubmit: (expense: ExpenseFormValues) => void
-  expenseToEdit?: Expense | null
+type TransactionFormProps = {
+  onSubmit: (transaction: TransactionFormValues) => void
+  transactionToEdit?: Transaction | null
   onCancelEdit?: () => void
 }
 
-type FormErrors = Partial<Record<keyof ExpenseFormValues, string>>
+type FormErrors = Partial<Record<keyof TransactionFormValues, string>>
 
-const expenseCategories = [
-  'Food',
-  'Transport',
-  'Housing',
-  'Utilities',
-  'Health',
-  'Entertainment',
-  'Education',
-  'Other',
-]
+const transactionCategories: Record<TransactionType, readonly string[]> = {
+  expense: [
+    'Food',
+    'Transport',
+    'Housing',
+    'Utilities',
+    'Health',
+    'Entertainment',
+    'Education',
+    'Other',
+  ],
+  income: ['Salary', 'Freelance', 'Investments', 'Gift', 'Other'],
+}
 
 function getToday() {
   const now = new Date()
@@ -56,21 +64,41 @@ function toCalendarDate(value: string) {
   return new Date(year, month - 1, day)
 }
 
-function ExpenseForm({
+function TransactionForm({
   onSubmit,
-  expenseToEdit = null,
+  transactionToEdit = null,
   onCancelEdit,
-}: ExpenseFormProps) {
-  const [description, setDescription] = useState(
-    expenseToEdit?.description ?? '',
+}: TransactionFormProps) {
+  const [type, setType] = useState<TransactionType>(
+    transactionToEdit?.type ?? 'expense',
   )
-  const [amount, setAmount] = useState(expenseToEdit?.amount.toString() ?? '')
-  const [category, setCategory] = useState(expenseToEdit?.category ?? '')
-  const [date, setDate] = useState(expenseToEdit?.date ?? getToday)
+  const [description, setDescription] = useState(
+    transactionToEdit?.description ?? '',
+  )
+  const [amount, setAmount] = useState(
+    transactionToEdit?.amount.toString() ?? '',
+  )
+  const [category, setCategory] = useState(
+    transactionToEdit?.category ?? '',
+  )
+  const [date, setDate] = useState(transactionToEdit?.date ?? getToday)
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
-  const isEditing = expenseToEdit !== null
+  const isEditing = transactionToEdit !== null
   const selectedDate = isValidDate(date) ? toCalendarDate(date) : undefined
+  const typeLabel = type === 'income' ? 'income' : 'expense'
+
+  function handleTypeChange(value: string) {
+    if (value !== 'income' && value !== 'expense') {
+      return
+    }
+
+    setType(value)
+
+    if (!transactionCategories[value].includes(category)) {
+      setCategory('')
+    }
+  }
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault()
@@ -100,6 +128,7 @@ function ExpenseForm({
     }
 
     onSubmit({
+      type,
       description: description.trim(),
       amount: parsedAmount,
       category: category.trim(),
@@ -107,6 +136,7 @@ function ExpenseForm({
     })
 
     if (!isEditing) {
+      setType('expense')
       setDescription('')
       setAmount('')
       setCategory('')
@@ -120,15 +150,32 @@ function ExpenseForm({
     <form onSubmit={handleSubmit} noValidate>
       <Card>
         <CardHeader>
-          <CardTitle>{isEditing ? 'Edit expense' : 'Add an expense'}</CardTitle>
+          <CardTitle>
+            {isEditing ? `Edit ${typeLabel}` : `Add ${typeLabel}`}
+          </CardTitle>
           <CardDescription>
             {isEditing
-              ? 'Update the details for this expense.'
-              : 'Record an expense to keep track of your spending.'}
+              ? `Update the details for this ${typeLabel}.`
+              : type === 'income'
+                ? 'Record money coming in.'
+                : 'Record money going out.'}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-5">
+          <Tabs value={type} onValueChange={handleTypeChange}>
+            <TabsList className="w-full group-data-horizontal/tabs:h-10">
+              <TabsTrigger value="expense">Expense</TabsTrigger>
+              <TabsTrigger value="income">Income</TabsTrigger>
+            </TabsList>
+            <TabsContent value="expense" className="sr-only">
+              Record an expense transaction.
+            </TabsContent>
+            <TabsContent value="income" className="sr-only">
+              Record an income transaction.
+            </TabsContent>
+          </Tabs>
+
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input
@@ -175,15 +222,20 @@ function ExpenseForm({
                 <SelectTrigger
                   id="category"
                   className="w-full data-[size=default]:h-10"
-                  aria-describedby={errors.category ? 'category-error' : undefined}
+                  aria-describedby={
+                    errors.category ? 'category-error' : undefined
+                  }
                   aria-invalid={Boolean(errors.category)}
                 >
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent position="popper" side="bottom" align="start">
-                  {expenseCategories.map((expenseCategory) => (
-                    <SelectItem key={expenseCategory} value={expenseCategory}>
-                      {expenseCategory}
+                  {transactionCategories[type].map((transactionCategory) => (
+                    <SelectItem
+                      key={transactionCategory}
+                      value={transactionCategory}
+                    >
+                      {transactionCategory}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -255,7 +307,7 @@ function ExpenseForm({
             }
             type="submit"
           >
-            {isEditing ? 'Save changes' : 'Add expense'}
+            {isEditing ? `Update ${typeLabel}` : `Add ${typeLabel}`}
           </Button>
         </CardFooter>
       </Card>
@@ -263,4 +315,4 @@ function ExpenseForm({
   )
 }
 
-export default ExpenseForm
+export default TransactionForm

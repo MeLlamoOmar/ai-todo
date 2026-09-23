@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun, WalletCards } from 'lucide-react';
-import ExpenseForm from './components/ExpenseForm';
-import ExpenseList from './components/ExpenseList';
-import ExpenseSummary from './components/ExpenseSummary';
+import TransactionForm from './components/TransactionForm';
+import TransactionList from './components/TransactionList';
+import TransactionSummary from './components/TransactionSummary';
 import { Button } from './components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from './components/ui/tooltip';
-import type { Expense, ExpenseFormValues } from './types/expense';
-import { createExpense } from './utils/createExpense';
-import { removeExpense } from './utils/removeExpense';
-import { updateExpense } from './utils/updateExpense';
+import type {
+  Transaction,
+  TransactionFormValues,
+} from './types/transaction';
+import { createTransaction } from './utils/createTransaction';
+import { removeTransaction } from './utils/removeTransaction';
+import { updateTransaction } from './utils/updateTransaction';
 
 type Theme = 'light' | 'dark';
 
@@ -29,41 +32,49 @@ function getInitialTheme(): Theme {
 }
 
 function App() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [expenseBeingEdited, setExpenseBeingEdited] = useState<Expense | null>(
-    null,
-  );
+  const [transactionBeingEdited, setTransactionBeingEdited] =
+    useState<Transaction | null>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     window.localStorage.setItem('theme', theme);
   }, [theme]);
 
-  function handleSubmitExpense(expenseValues: ExpenseFormValues) {
-    if (expenseBeingEdited) {
-      setExpenses((currentExpenses) =>
-        updateExpense(currentExpenses, expenseBeingEdited.id, expenseValues),
+  function handleSubmitTransaction(transactionValues: TransactionFormValues) {
+    if (transactionBeingEdited) {
+      setTransactions((currentTransactions) =>
+        updateTransaction(
+          currentTransactions,
+          transactionBeingEdited.id,
+          transactionValues,
+        ),
       );
-      setExpenseBeingEdited(null);
+      setTransactionBeingEdited(null);
       return;
     }
 
-    const expense = createExpense(expenseValues);
+    const transaction = createTransaction(transactionValues);
 
-    setExpenses((currentExpenses) => [expense, ...currentExpenses]);
+    setTransactions((currentTransactions) => [
+      transaction,
+      ...currentTransactions,
+    ]);
   }
 
-  function handleDeleteExpense(id: string) {
-    setExpenses((currentExpenses) => removeExpense(currentExpenses, id));
+  function handleDeleteTransaction(id: string) {
+    setTransactions((currentTransactions) =>
+      removeTransaction(currentTransactions, id),
+    );
 
-    if (expenseBeingEdited?.id === id) {
-      setExpenseBeingEdited(null);
+    if (transactionBeingEdited?.id === id) {
+      setTransactionBeingEdited(null);
     }
   }
 
-  function handleEditExpense(expense: Expense) {
-    setExpenseBeingEdited(expense);
+  function handleEditTransaction(transaction: Transaction) {
+    setTransactionBeingEdited(transaction);
   }
 
   return (
@@ -76,10 +87,10 @@ function App() {
             </div>
             <div>
               <h1 className="font-heading text-xl font-semibold tracking-tight">
-                Expense Tracker
+                Transaction Tracker
               </h1>
               <p className="text-sm text-muted-foreground">
-                Keep your spending organized.
+                Keep your income and spending organized.
               </p>
             </div>
           </div>
@@ -112,19 +123,19 @@ function App() {
           </Tooltip>
         </header>
 
-        <ExpenseSummary expenses={expenses} />
+        <TransactionSummary transactions={transactions} />
 
         <div className="grid items-start gap-6 lg:grid-cols-2">
-          <ExpenseForm
-            key={expenseBeingEdited?.id ?? 'new-expense'}
-            onSubmit={handleSubmitExpense}
-            expenseToEdit={expenseBeingEdited}
-            onCancelEdit={() => setExpenseBeingEdited(null)}
+          <TransactionForm
+            key={transactionBeingEdited?.id ?? 'new-transaction'}
+            onSubmit={handleSubmitTransaction}
+            transactionToEdit={transactionBeingEdited}
+            onCancelEdit={() => setTransactionBeingEdited(null)}
           />
-          <ExpenseList
-            expenses={expenses}
-            onDelete={handleDeleteExpense}
-            onEdit={handleEditExpense}
+          <TransactionList
+            transactions={transactions}
+            onDelete={handleDeleteTransaction}
+            onEdit={handleEditTransaction}
           />
         </div>
       </div>
