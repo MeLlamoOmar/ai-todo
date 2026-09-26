@@ -2,7 +2,7 @@ import type { TransactionRow } from '../types/database';
 import type { Transaction } from '../types/transaction';
 import { getSupabaseClient } from '../lib/supabaseClient';
 
-const columns = 'id,type,description,amount,category,date,updated_at';
+const columns = 'id,type,description,amount,category,date,created_at,updated_at';
 
 export function fromTransactionRow(row: TransactionRow): Transaction {
   return {
@@ -12,6 +12,7 @@ export function fromTransactionRow(row: TransactionRow): Transaction {
     amount: row.amount,
     category: row.category,
     date: row.date,
+    createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
@@ -24,6 +25,7 @@ export function toTransactionRow(transaction: Transaction): TransactionRow {
     amount: transaction.amount,
     category: transaction.category,
     date: transaction.date,
+    created_at: transaction.createdAt,
     updated_at: transaction.updatedAt,
   };
 }

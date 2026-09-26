@@ -7,6 +7,7 @@ export type TransactionRow = {
   amount: number;
   category: string;
   date: string;
+  created_at: string;
   updated_at: string;
 };
 
@@ -19,7 +20,7 @@ export type Database = {
           TransactionRow,
           'type' | 'description' | 'amount' | 'category' | 'date'
         > &
-          Partial<Pick<TransactionRow, 'id' | 'updated_at'>>;
+          Partial<Pick<TransactionRow, 'id' | 'created_at' | 'updated_at'>>;
         Update: Partial<TransactionRow>;
         Relationships: [];
       };
