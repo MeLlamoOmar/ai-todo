@@ -31,7 +31,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 
 type TransactionFormProps = {
-  onSubmit: (transaction: TransactionFormValues) => void
+  onSubmit: (transaction: TransactionFormValues) => Promise<boolean>
   transactionToEdit?: Transaction | null
   onCancelEdit?: () => void
 }
@@ -71,6 +71,7 @@ function TransactionForm({
   const [date, setDate] = useState(transactionToEdit?.date ?? getToday)
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const isEditing = transactionToEdit !== null
   const selectedDate = isValidDate(date) ? toCalendarDate(date) : undefined
   const typeLabel = type === 'income' ? 'income' : 'expense'
@@ -87,8 +88,12 @@ function TransactionForm({
     }
   }
 
-  function handleSubmit(event: SubmitEvent) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault()
+
+    if (isSubmitting) {
+      return
+    }
 
     const nextErrors: FormErrors = {}
     const parsedAmount = Number(amount)
@@ -114,27 +119,37 @@ function TransactionForm({
       return
     }
 
-    onSubmit({
-      type,
-      description: description.trim(),
-      amount: parsedAmount,
-      category: category.trim(),
-      date,
-    })
+    setIsSubmitting(true)
 
-    if (!isEditing) {
-      setType('expense')
-      setDescription('')
-      setAmount('')
-      setCategory('')
-      setDate(getToday())
+    try {
+      const wasSaved = await onSubmit({
+        type,
+        description: description.trim(),
+        amount: parsedAmount,
+        category: category.trim(),
+        date,
+      })
+
+      if (!wasSaved) {
+        return
+      }
+
+      if (!isEditing) {
+        setType('expense')
+        setDescription('')
+        setAmount('')
+        setCategory('')
+        setDate(getToday())
+      }
+
+      setErrors({})
+    } finally {
+      setIsSubmitting(false)
     }
-
-    setErrors({})
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
       <Card>
         <CardHeader>
           <CardTitle>
@@ -282,6 +297,7 @@ function TransactionForm({
               type="button"
               variant="outline"
               onClick={onCancelEdit}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
@@ -293,8 +309,13 @@ function TransactionForm({
                 : 'h-10 flex-1'
             }
             type="submit"
+            disabled={isSubmitting}
           >
-            {isEditing ? `Update ${typeLabel}` : `Add ${typeLabel}`}
+            {isSubmitting
+              ? 'Saving...'
+              : isEditing
+                ? `Update ${typeLabel}`
+                : `Add ${typeLabel}`}
           </Button>
         </CardFooter>
       </Card>
