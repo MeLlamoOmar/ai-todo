@@ -40,7 +40,6 @@ type Transaction = {
   amount: number;
   category: string;
   date: string;
-  createdAt: string;
   updatedAt: string;
 };
 ```

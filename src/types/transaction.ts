@@ -7,11 +7,10 @@ export type Transaction = {
   amount: number;
   category: string;
   date: string;
-  createdAt: string;
   updatedAt: string;
 };
 
 export type TransactionFormValues = Omit<
   Transaction,
-  'id' | 'createdAt' | 'updatedAt'
+  'id' | 'updatedAt'
 >;
