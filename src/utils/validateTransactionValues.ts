@@ -1,13 +1,17 @@
-import type { TransactionFormValues } from '../types/transaction'
-import { isValidDate } from './date'
+import type { TransactionFormValues } from '../types/transaction.ts'
+import { isValidDate } from './date.ts'
 
 export function validateTransactionValues(
-  values: TransactionFormValues,
+  values: unknown,
 ): TransactionFormValues {
-  const description = values.description.trim()
-  const category = values.category.trim()
+  if (!values || typeof values !== 'object' || Array.isArray(values)) {
+    throw new Error('Transaction values must be an object')
+  }
+  const input = values as Record<string, unknown>
+  const description = typeof input.description === 'string' ? input.description.trim() : ''
+  const category = typeof input.category === 'string' ? input.category.trim() : ''
 
-  if (values.type !== 'income' && values.type !== 'expense') {
+  if (input.type !== 'income' && input.type !== 'expense') {
     throw new Error('Transaction type is invalid')
   }
 
@@ -15,7 +19,7 @@ export function validateTransactionValues(
     throw new Error('Description is required')
   }
 
-  if (!Number.isFinite(values.amount) || values.amount <= 0) {
+  if (typeof input.amount !== 'number' || !Number.isFinite(input.amount) || input.amount <= 0) {
     throw new Error('Amount must be greater than zero')
   }
 
@@ -23,15 +27,15 @@ export function validateTransactionValues(
     throw new Error('Category is required')
   }
 
-  if (!isValidDate(values.date)) {
+  if (typeof input.date !== 'string' || !isValidDate(input.date)) {
     throw new Error('Date is invalid')
   }
 
   return {
-    type: values.type,
+    type: input.type,
     description,
-    amount: values.amount,
+    amount: input.amount,
     category,
-    date: values.date,
+    date: input.date,
   }
 }
