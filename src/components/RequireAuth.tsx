@@ -1,9 +1,9 @@
 import { Link, Navigate } from 'react-router';
-import DashboardPage from '../pages/DashboardPage';
+import { Fragment, type ReactNode } from 'react';
 import { useAuth } from '../lib/authContext';
 import { Button } from './ui/button';
 
-export default function RequireAuth() {
+export default function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading, error, retry } = useAuth();
 
   if (isLoading) {
@@ -22,5 +22,5 @@ export default function RequireAuth() {
     );
   }
 
-  return user ? <DashboardPage key={user.id} /> : <Navigate to="/auth" replace />;
+  return user ? <Fragment key={user.id}>{children}</Fragment> : <Navigate to="/auth" replace />;
 }

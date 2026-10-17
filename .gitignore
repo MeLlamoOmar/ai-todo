@@ -13,6 +13,8 @@ dist-ssr
 *.local
 /future-features.md
 /iphone-shortcut-plan.md
+/supabase/ATAJO_IPHONE.md
+/supabase/SHORTCUTS.md
 
 # Editor directories and files
 .vscode/*

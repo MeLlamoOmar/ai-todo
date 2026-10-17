@@ -102,3 +102,20 @@ If Google rejects the callback, check the exact redirect URI, allowed app return
 URL, and test-user list. If code exchange fails, start a new sign-in in the same
 browser; PKCE codes are single-use and need the original browser's verifier.
 Missing credentials prevent testing the complete Google redirect flow.
+
+## Siri and iOS Shortcuts
+
+The app's **Integrations** page includes instructions for creating a device token
+and setting up the shortcut. The new migrations preserve existing transactions.
+The integration function validates its own opaque tokens; only that function has
+`verify_jwt = false`.
+
+After applying the local migrations, run the function in a separate terminal:
+
+```bash
+pnpm exec supabase functions serve integration-transactions
+```
+
+With the function running, `pnpm test:integrations:local` exercises the real local
+API and concurrent requests. It requires Python 3 and `psql`, creates disposable
+test users, and removes their fixtures afterward.

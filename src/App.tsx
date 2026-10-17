@@ -50,7 +50,7 @@ function App() {
   return (
     <main className="min-h-svh bg-muted/30 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
-        <header className="flex items-center justify-between gap-4">
+        <header className="flex flex-wrap items-center justify-between gap-4">
           <Link
             to="/"
             className="flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -70,14 +70,19 @@ function App() {
 
           <div className="flex items-center gap-2">
             {user && (
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isSigningOut}
-                onClick={() => void handleSignOut()}
-              >
-                {isSigningOut ? 'Signing out...' : 'Sign out'}
-              </Button>
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/integrations">Integrations</Link>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isSigningOut}
+                  onClick={() => void handleSignOut()}
+                >
+                  {isSigningOut ? 'Signing out...' : 'Sign out'}
+                </Button>
+              </>
             )}
             <Tooltip>
               <TooltipTrigger asChild>

@@ -8,6 +8,8 @@ import AuthPage from './pages/AuthPage'
 import AuthProvider from './components/AuthProvider'
 import RequireAuth from './components/RequireAuth'
 import NotFoundPage from './pages/NotFoundPage'
+import DashboardPage from './pages/DashboardPage'
+import IntegrationsPage from './pages/IntegrationsPage'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -16,7 +18,8 @@ createRoot(document.getElementById('root')!).render(
         <AuthProvider>
           <Routes>
             <Route path="/" element={<App />}>
-              <Route index element={<RequireAuth />} />
+              <Route index element={<RequireAuth><DashboardPage /></RequireAuth>} />
+              <Route path="integrations" element={<RequireAuth><IntegrationsPage /></RequireAuth>} />
               <Route path="auth" element={<AuthPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

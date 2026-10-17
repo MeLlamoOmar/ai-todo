@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:integrations:local": "python3 scripts/test-integrations-local.py",
     "preview": "vite preview"
   },
   "dependencies": {

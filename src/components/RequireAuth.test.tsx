@@ -5,15 +5,11 @@ import { AuthContext } from '../lib/authContext';
 import type { AuthState } from '../types/auth';
 import RequireAuth from './RequireAuth';
 
-vi.mock('../pages/DashboardPage', () => ({
-  default: () => <p>Private dashboard</p>,
-}));
-
 function render(state: AuthState) {
   return renderToStaticMarkup(
     <AuthContext value={{ ...state, retry: vi.fn(), signOut: vi.fn() }}>
       <MemoryRouter>
-        <RequireAuth />
+        <RequireAuth><p>Private dashboard</p></RequireAuth>
       </MemoryRouter>
     </AuthContext>,
   );
