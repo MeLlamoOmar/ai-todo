@@ -18,6 +18,7 @@ vi.mock('../lib/supabaseClient', () => ({
 
 const row: TransactionRow = {
   id: 'cb086d0f-61b0-4af8-aa56-2aaf03647fb5',
+  user_id: '63fe9a5b-74a2-45b3-970b-a6d5cb93776c',
   type: 'expense',
   description: 'Groceries',
   amount: 42.5,
@@ -63,7 +64,17 @@ describe('transaction row conversion', () => {
   it('converts the app model into a database row without mutation', () => {
     const original = { ...transaction };
 
-    expect(toTransactionRow(transaction)).toEqual(row);
+    const insert = toTransactionRow(transaction);
+    expect(insert).toEqual({
+      id: row.id,
+      type: row.type,
+      description: row.description,
+      amount: row.amount,
+      category: row.category,
+      date: row.date,
+      updated_at: row.updated_at,
+    });
+    expect(insert).not.toHaveProperty('user_id');
     expect(transaction).toEqual(original);
   });
 });
@@ -101,7 +112,7 @@ describe('transaction repository', () => {
     });
 
     await expect(insertTransaction(transaction)).resolves.toEqual(transaction);
-    expect(operation).toHaveBeenCalledWith(row);
+    expect(operation).toHaveBeenCalledWith(toTransactionRow(transaction));
     expect(select).toHaveBeenCalled();
   });
 

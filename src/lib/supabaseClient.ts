@@ -15,6 +15,13 @@ export function getSupabaseClient() {
     throw new Error('Local Supabase URL and publishable key are required.');
   }
 
-  client = createClient<Database>(url, publishableKey);
+  client = createClient<Database>(url, publishableKey, {
+    auth: {
+      flowType: 'pkce',
+      detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  });
   return client;
 }

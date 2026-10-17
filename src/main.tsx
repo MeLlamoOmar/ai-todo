@@ -5,20 +5,23 @@ import { TooltipProvider } from './components/ui/tooltip'
 import './index.css'
 import App from './App.tsx'
 import AuthPage from './pages/AuthPage'
-import DashboardPage from './pages/DashboardPage'
+import AuthProvider from './components/AuthProvider'
+import RequireAuth from './components/RequireAuth'
 import NotFoundPage from './pages/NotFoundPage'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <TooltipProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route index element={<RequireAuth />} />
+              <Route path="auth" element={<AuthPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </StrictMode>,
