@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun, WalletCards } from 'lucide-react';
 import { Link, Outlet } from 'react-router';
+import { useAuth } from './lib/authContext';
 import { Button } from './components/ui/button';
 import {
   Tooltip,
@@ -23,7 +24,23 @@ function getInitialTheme(): Theme {
 }
 
 function App() {
+  const { user, signOut } = useAuth();
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+    setSignOutError(null);
+
+    try {
+      await signOut();
+    } catch (error) {
+      setSignOutError(error instanceof Error ? error.message : 'Please try again.');
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -51,34 +68,51 @@ function App() {
             </div>
           </Link>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
+          <div className="flex items-center gap-2">
+            {user && (
               <Button
                 type="button"
                 variant="outline"
-                size="icon"
-                onClick={() =>
-                  setTheme((currentTheme) =>
-                    currentTheme === 'dark' ? 'light' : 'dark',
-                  )
-                }
-                aria-label={
-                  theme === 'dark' ? 'Use light theme' : 'Use dark theme'
-                }
+                disabled={isSigningOut}
+                onClick={() => void handleSignOut()}
               >
-                {theme === 'dark' ? (
-                  <Sun className="size-4" aria-hidden="true" />
-                ) : (
-                  <Moon className="size-4" aria-hidden="true" />
-                )}
+                {isSigningOut ? 'Signing out...' : 'Sign out'}
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {theme === 'dark' ? 'Use light theme' : 'Use dark theme'}
-            </TooltipContent>
-          </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    setTheme((currentTheme) =>
+                      currentTheme === 'dark' ? 'light' : 'dark',
+                    )
+                  }
+                  aria-label={
+                    theme === 'dark' ? 'Use light theme' : 'Use dark theme'
+                  }
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="size-4" aria-hidden="true" />
+                  ) : (
+                    <Moon className="size-4" aria-hidden="true" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {theme === 'dark' ? 'Use light theme' : 'Use dark theme'}
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </header>
 
+        {signOutError && (
+          <p role="alert" className="text-sm text-destructive">
+            Could not sign out. {signOutError}
+          </p>
+        )}
         <Outlet />
       </div>
     </main>

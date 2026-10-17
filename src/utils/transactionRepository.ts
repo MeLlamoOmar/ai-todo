@@ -2,7 +2,7 @@ import type { TransactionRow } from '../types/database';
 import type { Transaction } from '../types/transaction';
 import { getSupabaseClient } from '../lib/supabaseClient';
 
-const columns = 'id,type,description,amount,category,date,updated_at';
+const columns = 'id,user_id,type,description,amount,category,date,updated_at';
 
 export function fromTransactionRow(row: TransactionRow): Transaction {
   return {
@@ -16,7 +16,9 @@ export function fromTransactionRow(row: TransactionRow): Transaction {
   };
 }
 
-export function toTransactionRow(transaction: Transaction): TransactionRow {
+export function toTransactionRow(
+  transaction: Transaction,
+): Omit<TransactionRow, 'user_id'> {
   return {
     id: transaction.id,
     type: transaction.type,
